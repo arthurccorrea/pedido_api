@@ -1,19 +1,24 @@
 package br.com.prova.pedido_api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-@Entity(name="pedido_item")
+@Entity
 @Table(name="pedido_item")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "pedido"})
 public class PedidoItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pedido_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_PEDIDO_PEDIDO_ITEM"))
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "pedido_id", foreignKey = @ForeignKey(name = "FK_PEDIDO_PEDIDO_ITEM"))
     private Pedido pedido;
+    @Transient
+    private UUID pedidoId;
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="item_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_PEDIDO_ITEM_ITEM"))
     private Item item;
@@ -21,7 +26,7 @@ public class PedidoItem {
     @NotBlank
     private String descricao;
     @NotNull
-    private String valor;
+    private double valor;
 
     public UUID getId() {
         return id;
@@ -37,6 +42,14 @@ public class PedidoItem {
 
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
+    }
+
+    public UUID getPedidoId() {
+        return pedidoId;
+    }
+
+    public void setPedidoId(UUID pedidoId) {
+        this.pedidoId = pedidoId;
     }
 
     public Item getItem() {
@@ -55,11 +68,11 @@ public class PedidoItem {
         this.descricao = descricao;
     }
 
-    public String getValor() {
+    public double getValor() {
         return valor;
     }
 
-    public void setValor(String valor) {
+    public void setValor(double valor) {
         this.valor = valor;
     }
 }

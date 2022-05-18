@@ -1,6 +1,7 @@
 package br.com.prova.pedido_api.models;
 
 import br.com.prova.pedido_api.enums.StatusPedido;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -10,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-@Entity(name="pedido")
+@Entity
 @Table(name="pedido")
 public class Pedido {
 
@@ -23,11 +24,9 @@ public class Pedido {
     @NotNull
     private BigDecimal valorTotal;
     @Enumerated(EnumType.STRING)
-    private StatusPedido statusPedido;
+    private StatusPedido statusPedido = StatusPedido.ABERTO;
     private Double porcentagemDesconto;
-    @OneToMany(targetEntity = PedidoItem.class, fetch = FetchType.EAGER, orphanRemoval = true, cascade = { CascadeType.ALL }, mappedBy = "pedido")
-    @NotNull
-    @NotEmpty
+    @Transient
     private List<PedidoItem> itens;
 
     public UUID getId() {

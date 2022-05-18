@@ -1,6 +1,5 @@
 package br.com.prova.pedido_api.controller;
 
-import br.com.prova.pedido_api.models.Pedido;
 import br.com.prova.pedido_api.models.PedidoItem;
 import br.com.prova.pedido_api.services.PedidoItemService;
 import org.springframework.beans.factory.annotation.Autowired;
