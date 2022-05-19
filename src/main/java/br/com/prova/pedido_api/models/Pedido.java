@@ -21,7 +21,6 @@ public class Pedido {
     @NotNull
     @NotBlank
     private String nomeComprador;
-    @NotNull
     private BigDecimal valorTotal;
     @Enumerated(EnumType.STRING)
     private StatusPedido statusPedido = StatusPedido.ABERTO;

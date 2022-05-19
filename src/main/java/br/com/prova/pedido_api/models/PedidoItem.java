@@ -27,6 +27,8 @@ public class PedidoItem {
     private String descricao;
     @NotNull
     private double valor;
+    @NotNull
+    private double quantidade;
 
     public UUID getId() {
         return id;
@@ -74,5 +76,13 @@ public class PedidoItem {
 
     public void setValor(double valor) {
         this.valor = valor;
+    }
+
+    public double getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(double quantidade) {
+        this.quantidade = quantidade;
     }
 }

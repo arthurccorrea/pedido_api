@@ -36,7 +36,10 @@ public class PedidoService {
         if(!todosItensAtivos) {
             return Optional.empty();
         }
-        if (pedido.getStatusPedido().equals(StatusPedido.ABERTO)) {
+        calculaValorTotal(pedido);
+        if (pedido.getStatusPedido().equals(StatusPedido.ABERTO)
+                && pedido.getPorcentagemDesconto() != null
+                && pedido.getPorcentagemDesconto() > 0) {
             calculaDesconto(pedido, itensPedido);
         }
         Optional<Pedido> opPedido = Optional.ofNullable(pedidoJPARepository.save(pedido));
@@ -55,6 +58,15 @@ public class PedidoService {
         return opPedido;
     }
 
+    private void calculaValorTotal(Pedido pedido) {
+        BigDecimal valorTotal = BigDecimal.ZERO;
+        for(PedidoItem item : pedido.getItens()) {
+            valorTotal = valorTotal.add(BigDecimal.valueOf(item.getValor() * item.getQuantidade()));
+
+        }
+        pedido.setValorTotal(valorTotal);
+    }
+
     private void calculaDesconto(Pedido pedido, List<Item> itens) {
         List<Item> itensProduto = itens.stream().filter(item -> item.getTipoItem().equals(TipoItem.PRODUTO)).collect(Collectors.toList());
         if (!itensProduto.isEmpty()) {
@@ -68,7 +80,7 @@ public class PedidoService {
             BigDecimal totalItensProduto = new BigDecimal(
                     pedidoItensProduto
                             .stream()
-                            .map(PedidoItem::getValor)
+                            .map(pedidoItem -> pedidoItem.getValor() * pedidoItem.getQuantidade())
                             .reduce(0.0, Double::sum));
             BigDecimal porcentagemDesconto = new BigDecimal(pedido.getPorcentagemDesconto());
             BigDecimal totalDesconto = porcentagemDesconto.divide(new BigDecimal(100)).multiply(totalItensProduto);
