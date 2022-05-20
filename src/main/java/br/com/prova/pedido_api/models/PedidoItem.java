@@ -14,11 +14,9 @@ public class PedidoItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "pedido_id", foreignKey = @ForeignKey(name = "FK_PEDIDO_PEDIDO_ITEM"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pedido_id", foreignKey = @ForeignKey(name = "FK_PEDIDO_PEDIDO_ITEM"), nullable = true)
     private Pedido pedido;
-    @Transient
-    private UUID pedidoId;
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="item_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_PEDIDO_ITEM_ITEM"))
     private Item item;
@@ -29,6 +27,8 @@ public class PedidoItem {
     private double valor;
     @NotNull
     private double quantidade;
+    @Transient
+    private UUID idPedido;
 
     public UUID getId() {
         return id;
@@ -46,12 +46,12 @@ public class PedidoItem {
         this.pedido = pedido;
     }
 
-    public UUID getPedidoId() {
-        return pedidoId;
+    public UUID getIdPedido() {
+        return idPedido;
     }
 
-    public void setPedidoId(UUID pedidoId) {
-        this.pedidoId = pedidoId;
+    public void setIdPedido(UUID idPedido) {
+        this.idPedido = idPedido;
     }
 
     public Item getItem() {

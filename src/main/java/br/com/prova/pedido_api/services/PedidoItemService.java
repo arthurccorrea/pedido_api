@@ -1,9 +1,13 @@
 package br.com.prova.pedido_api.services;
 
+import br.com.prova.pedido_api.models.Pedido;
 import br.com.prova.pedido_api.models.PedidoItem;
 import br.com.prova.pedido_api.repositories.jpa.PedidoItemJPARepository;
 import br.com.prova.pedido_api.repositories.jpa.PedidoItemRepository;
+import br.com.prova.pedido_api.repositories.jpa.PedidoJPARepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +22,15 @@ public class PedidoItemService {
     @Autowired
     PedidoItemRepository pedidoItemRepository;
 
+    @Autowired
+    PedidoJPARepository pedidoJPARepository;
+
     public Optional<PedidoItem> save(PedidoItem pedidoItem) {
+        Optional<Pedido> opPedido = pedidoJPARepository.findById(pedidoItem.getIdPedido());
+        if (opPedido.isEmpty()) {
+            return Optional.empty();
+        }
+        pedidoItem.setPedido(opPedido.get());
         return Optional.ofNullable(pedidoItemJPARepository.save(pedidoItem));
     }
 
@@ -36,7 +48,7 @@ public class PedidoItemService {
             return opPedidoItem;
         }
 
-        opPedidoItem.get().setPedidoId(opPedidoItem.get().getPedido().getId());
+        opPedidoItem.get().setIdPedido(opPedidoItem.get().getPedido().getId());
         return opPedidoItem;
     }
 
@@ -46,6 +58,14 @@ public class PedidoItemService {
 
     public List<PedidoItem> findByPedidoId(UUID pedidoId) {
         return pedidoItemRepository.findPedidoItemByPedidoId(pedidoId);
+    }
+
+    public Page<PedidoItem> findAll(Pageable pageable) {
+        return pedidoItemJPARepository.findAll(pageable);
+    }
+
+    public Page<PedidoItem> findAllByDescricao(String descricao, Pageable pageable) {
+        return pedidoItemJPARepository.findByDescricaoContainsIgnoreCase(descricao, pageable);
     }
 
     public boolean delete(PedidoItem pedidoItem) {

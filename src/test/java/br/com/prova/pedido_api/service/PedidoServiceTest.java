@@ -1,7 +1,6 @@
 package br.com.prova.pedido_api.service;
 
 import br.com.prova.pedido_api.enums.StatusPedido;
-import br.com.prova.pedido_api.enums.TipoItem;
 import br.com.prova.pedido_api.models.Pedido;
 import br.com.prova.pedido_api.repositories.jpa.PedidoJPARepository;
 import br.com.prova.pedido_api.services.ItemService;
@@ -22,7 +21,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

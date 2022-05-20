@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,13 +78,12 @@ public class PedidoService {
                     pedidoItensProduto.add(pedidoItem);
                 }
             });
-            BigDecimal totalItensProduto = new BigDecimal(
-                    pedidoItensProduto
-                            .stream()
-                            .map(pedidoItem -> pedidoItem.getValor() * pedidoItem.getQuantidade())
-                            .reduce(0.0, Double::sum));
-            BigDecimal porcentagemDesconto = new BigDecimal(pedido.getPorcentagemDesconto());
-            BigDecimal totalDesconto = porcentagemDesconto.divide(new BigDecimal(100)).multiply(totalItensProduto);
+            BigDecimal totalItensProduto = BigDecimal.valueOf(pedidoItensProduto
+                    .stream()
+                    .map(pedidoItem -> pedidoItem.getValor() * pedidoItem.getQuantidade())
+                    .reduce(0.0, Double::sum));
+            BigDecimal porcentagemDesconto = BigDecimal.valueOf(pedido.getPorcentagemDesconto());
+            BigDecimal totalDesconto = porcentagemDesconto.divide(new BigDecimal(100), RoundingMode.HALF_UP).multiply(totalItensProduto);
             pedido.setValorTotal(pedido.getValorTotal().subtract(totalDesconto));
         }
     }

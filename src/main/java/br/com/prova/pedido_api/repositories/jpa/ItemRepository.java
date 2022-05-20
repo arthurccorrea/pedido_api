@@ -1,9 +1,7 @@
 package br.com.prova.pedido_api.repositories.jpa;
 
 import br.com.prova.pedido_api.models.Item;
-import br.com.prova.pedido_api.models.QPedido;
 import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 import br.com.prova.pedido_api.models.QItem;
 
@@ -15,14 +13,12 @@ import java.util.UUID;
 @Repository
 public class ItemRepository {
 
-    EntityManager em;
-    JPAQueryFactory jpaQueryFactory;
+    final EntityManager em;
 
-    QItem qItem = QItem.item;
+    final QItem qItem = QItem.item;
 
     public ItemRepository(EntityManager em) {
         this.em = em;
-        this.jpaQueryFactory = new JPAQueryFactory(em);
     }
 
     public List<Item> findByIdIn(Set<UUID> ids) {

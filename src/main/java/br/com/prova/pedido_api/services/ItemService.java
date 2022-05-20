@@ -49,8 +49,7 @@ public class ItemService {
 
     public List<Item> findItensPedidoItem (List<PedidoItem> pedidoItens) {
         Set<UUID> itemIds = pedidoItens.stream().map(p -> p.getItem().getId()).collect(Collectors.toSet());
-        List<Item> itens = itemRepository.findByIdIn(itemIds);
-        return itens;
+        return itemRepository.findByIdIn(itemIds);
     }
 
     public boolean delete(Item item) {

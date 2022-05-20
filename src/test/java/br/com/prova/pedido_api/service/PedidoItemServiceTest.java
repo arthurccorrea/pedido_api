@@ -3,6 +3,7 @@ package br.com.prova.pedido_api.service;
 import br.com.prova.pedido_api.models.PedidoItem;
 import br.com.prova.pedido_api.repositories.jpa.PedidoItemJPARepository;
 import br.com.prova.pedido_api.repositories.jpa.PedidoItemRepository;
+import br.com.prova.pedido_api.repositories.jpa.PedidoJPARepository;
 import br.com.prova.pedido_api.services.PedidoItemService;
 import br.com.prova.pedido_api.util.TestUtil;
 import org.junit.jupiter.api.Test;
@@ -11,13 +12,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,6 +33,9 @@ public class PedidoItemServiceTest {
 
     @MockBean
     PedidoItemRepository pedidoItemRepository;
+
+    @MockBean
+    PedidoJPARepository pedidoJPARepository;
 
     @Autowired
     PedidoItemService pedidoItemService;
@@ -67,6 +73,7 @@ public class PedidoItemServiceTest {
     @Test
     public void dadoPedidoItem_deveSalvar() {
         // Given
+        when(pedidoJPARepository.findById(any())).thenReturn(Optional.of(TestUtil.getPedido(0)));
         when(pedidoItemJPARepository.save(any())).thenReturn(TestUtil.getPedidoItem());
 
         PedidoItem pedidoItem = TestUtil.getPedidoItem();
@@ -96,6 +103,39 @@ public class PedidoItemServiceTest {
         verify(pedidoItemJPARepository).saveAll(anyList());
         verifyNoMoreInteractions(pedidoItemJPARepository);
         assertFalse(pedidoItemListRetorno.isEmpty());
+    }
+
+    @Test
+    public void dadoFindAll_deveRetonarTodosOsPedidoItem() {
+        Pageable pageable = PageRequest.of(0, 20);
+        // Given
+        when(pedidoItemJPARepository.findAll(pageable)).thenReturn(TestUtil.getPedidoItemPage(20, 0));
+
+        // When
+        Page<PedidoItem> pedidoItemPage = pedidoItemService.findAll(pageable);
+
+        // Then
+        verify(pedidoItemJPARepository).findAll(pageable);
+        verifyNoMoreInteractions(pedidoItemJPARepository);
+        assertNotNull(pedidoItemPage);
+        assertFalse(pedidoItemPage.getContent().isEmpty());
+    }
+
+    @Test
+    public void dadoFindAllByDescricao_deveRetonarPagePedidoItem() {
+        Pageable pageable = PageRequest.of(0, 20);
+        String descricaoPesquisa = "Teste";
+        // Given
+        when(pedidoItemJPARepository.findByDescricaoContainsIgnoreCase(descricaoPesquisa, pageable)).thenReturn(TestUtil.getPedidoItemPage(2, 0));
+
+        // When
+        Page<PedidoItem> pedidoItemPage = pedidoItemService.findAllByDescricao(descricaoPesquisa, pageable);
+
+        // Then
+        verify(pedidoItemJPARepository).findByDescricaoContainsIgnoreCase(descricaoPesquisa, pageable);
+        verifyNoMoreInteractions(pedidoItemJPARepository);
+        assertNotNull(pedidoItemPage);
+        assertFalse(pedidoItemPage.getContent().isEmpty());
     }
 
     @Test
